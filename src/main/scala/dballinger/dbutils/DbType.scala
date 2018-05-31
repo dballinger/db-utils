@@ -2,26 +2,20 @@ package dballinger.dbutils
 
 import java.sql.ResultSet
 
-trait DbType {
+sealed trait DbType {
   type ScalaType
+  def resolve:ScalaType
 }
 
-trait Varchar extends DbType {
+class Varchar(resultSet: ResultSet, position: Int) extends DbType {
   override type ScalaType = String
+
+  override def resolve: String = resultSet.getString(position)
 }
 
-case object Varchar extends Varchar {
+class TestType(value:String) extends DbType {
+  override type ScalaType = String
 
-  implicit val extractor: Extractor[Varchar] = new Extractor[Varchar] {
-
-    override def extract(resultSet: ResultSet, position: Int): String = resultSet.getString(position)
-
-    override val t: Varchar = Varchar
-  }
+  override def resolve = value
 }
 
-trait Extractor[T <: DbType] {
-  val t: T
-
-  def extract(resultSet: ResultSet, position: Int): t.ScalaType
-}

@@ -12,7 +12,7 @@ class ExtractorTest extends FreeSpec with Matchers with MockitoSugar {
     "should extract a varchar as a string" in {
       val resultSet = mock[ResultSet]
       when(resultSet.getString(1)).thenReturn("aString")
-      val result = Varchar.extractor.extract(resultSet, 1)
+      val result = new Varchar(resultSet, 1).resolve
       result shouldBe "aString"
     }
   }
